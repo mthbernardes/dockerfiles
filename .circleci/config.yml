@@ -1,0 +1,41 @@
+version: 2.1
+
+executors:
+  docker-publisher:
+    docker: 
+      - image: circleci/buildpack-deps:stretch
+
+jobs:
+  docker-build:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: bash bin/deploy.sh build
+
+  docker-publish:
+    executor: docker-publisher
+    steps:
+      - setup_remote_docker
+      - run: bash bin/deploy auth 
+      - run: bash bin/deploy publish 
+      
+workflows:
+  gtrs-workflow:
+    jobs:
+      - docker-build:
+          filters:
+            branches:
+              only:
+                - master
+
+      - docker-publish:
+          requires:
+            - docker-build
+          filters:
+            branches:
+              only:
+                - master
+
