@@ -2,7 +2,7 @@
 
 action="$1"
 
-function docker_authenticationn(){
+function docker_authentication(){
     if [[ -z "$DOCKER_PASSWORD" ]];then
         echo "Variable DOCKER_PASSWORD not set"
         exit 1
