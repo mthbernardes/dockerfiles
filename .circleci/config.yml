@@ -17,6 +17,7 @@ jobs:
 
   docker-publish:
     executor: docker-publisher
+    workspace: /tmp/workspace
     steps:
       - setup_remote_docker
       - run: bash bin/deploy auth 
