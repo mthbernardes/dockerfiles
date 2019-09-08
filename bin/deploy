@@ -21,6 +21,7 @@ function docker_build_and_publish(){
         base_dir="$(dirname ${1})"
         image_name=$(basename ${base_dir})
         full_image_name="${DOCKER_LOGIN}/${image_name}"
+        echo "[+] Working on $image_name"
         docker build -t "${full_image_name}" "${base_dir}"
         docker push "${full_image_name}"
     fi
