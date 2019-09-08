@@ -13,7 +13,7 @@ jobs:
       - setup_remote_docker
       - attach_workspace:
           at: /tmp/workspace
-      - run: bash bin/deploy.sh build
+      - run: bash bin/deploy build
 
   docker-publish:
     executor: docker-publisher
