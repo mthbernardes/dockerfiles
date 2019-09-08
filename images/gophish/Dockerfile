@@ -13,8 +13,8 @@ unzip gophish-v0.6.0-linux-64bit.zip && \
 rm -f gophish-v0.6.0-linux-64bit.zip
 
 #RUN sed -i "s|127.0.0.1|0.0.0.0|g" config.json && \
+RUN chmod +x gophish
 COPY config.json .
-chmod +x gophish
 
 EXPOSE 1234 80
 ENTRYPOINT ["./gophish"]
