@@ -1,7 +1,5 @@
 FROM debian:jessie
 
-LABEL "teste=testando"
-
 RUN apt-get update && \
 apt-get install --no-install-recommends -y \
 unzip \
