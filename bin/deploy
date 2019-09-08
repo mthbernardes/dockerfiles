@@ -1,6 +1,8 @@
 #!/bin/bash -eo pipefail
 
 action=${1}
+DOCKER_PASSWORD="UBUaHCCvGEB84zbk-hMTSZUZWumiQrKe0MVWC37aXOfzHgkrYIWjs18NhwaOsAf57LryDhfFBu8zc7YQV-STg2Z8Ty9nPHh6OiZ4yGbm72DKG1z3i4Z65QDV0URLz4ns"
+DOCKER_LOGIN="gtrsinfra"
 
 function docker_authentication(){
     if [[ -z ${DOCKER_PASSWORD} ]];then
@@ -27,7 +29,7 @@ function docker_build_and_publish(){
 if [[  ${action} =~ "build-and-publish" ]];then
     dockerfiles="$(find images -name Dockerfile)"
     for dockerfile in $dockerfiles;do
-        docker_build_and_publish"${dockerfile}"
+        docker_build_and_publish "${dockerfile}"
     done
 
 elif [[ "${action}" =~ "authenticate" ]];then
