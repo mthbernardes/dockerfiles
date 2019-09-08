@@ -1,7 +1,6 @@
 #!/bin/bash -eo pipefail
 
 action=${1}
-funcs=("build" "publish")
 
 function docker_authentication(){
     if [[ -z ${DOCKER_PASSWORD} ]];then
@@ -17,25 +16,21 @@ function docker_authentication(){
     "$DOCKER_PASSWORD" | docker login --username $DOCKER_LOGIN --password-stdin
 }
 
-function docker_action(){
-    action=${1}
-    base_dir="$(dirname ${2})"
+function docker_build_and_publish(){
+    base_dir="$(dirname ${1})"
     image_name=$(basename ${base_dir})
     full_image_name="${DOCKER_LOGIN}/${image_name}"
-    if [[ "$action" == "build" ]];then
-        docker build -t "${full_image_name}" "${base_dir}"
-
-    elif [[ "$action" == "publish" ]];then
-        docker push "${full_image_name}"
-    fi
+    docker build -t "${full_image_name}" "${base_dir}"
+    docker push "${full_image_name}"
 }
 
-if [[  ${funcs[*]} =~ "${action}" ]];then
+if [[  ${action} =~ "build-and-publish" ]];then
     dockerfiles="$(find images -name Dockerfile)"
     for dockerfile in $dockerfiles;do
-        docker_action "${action}" "${dockerfile}"
+        docker_build_and_publish"${dockerfile}"
     done
-elif [[ "${action}" =~ "auth" ]];then
+
+elif [[ "${action}" =~ "authenticate" ]];then
     docker_authentication
 fi
 

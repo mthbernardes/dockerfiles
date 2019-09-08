@@ -6,37 +6,20 @@ executors:
       - image: circleci/buildpack-deps:stretch
 
 jobs:
-  docker-build:
+  docker-build-publish:
     executor: docker-publisher
     steps:
       - checkout
       - setup_remote_docker
-      - attach_workspace:
-          at: /tmp/workspace
-      - run: bash bin/deploy build
+      - run: bash bin/deploy authenticate
+      - run: bash bin/deploy build-and-publish
 
-  docker-publish:
-    executor: docker-publisher
-    workspace: /tmp/workspace
-    steps:
-      - setup_remote_docker
-      - run: bash bin/deploy auth 
-      - run: bash bin/deploy publish 
-      
+     
 workflows:
   dockerfiles-pipeline:
     jobs:
-      - docker-build:
+      - docker-build-publish:
           filters:
             branches:
               only:
                 - master
-
-      - docker-publish:
-          requires:
-            - docker-build
-          filters:
-            branches:
-              only:
-                - master
-
