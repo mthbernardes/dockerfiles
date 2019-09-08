@@ -41,6 +41,10 @@ function get_dockerfiles(){
         fi
         echo "Diff: $COMMIT_RANGE"
         export dockerfiles="$(git diff $COMMIT_RANGE --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
+    elif [[ "$CIRCLE_BRANCH" == "master" ]]; then
+        # CIRCLE_COMPARE_URL is not set, but branch is master, diff with last commit
+        echo "Diff: HEAD~1"
+        export dockerfiles="$(git diff HEAD~1 --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
     fi
     echo $dockerfiles
 }
