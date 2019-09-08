@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 while IFS= read -r filename;do
     if file "$filename" | grep "shell script" > /dev/null;then
         shellcheck  "$filename"
