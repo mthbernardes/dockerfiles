@@ -29,11 +29,14 @@ function get_dockerfiles(){
         export dockerfiles="$(find images -name Dockerfile)"
     fi
     if [[ ! -z "$CIRCLE_COMPARE_URL" ]]; then
+        echo $CIRCLE_COMPARE_URL
         # CIRCLE_COMPARE_URL is not empty, use it to get the diff
         if [[ $CIRCLE_COMPARE_URL = *"commit"* ]]; then
             COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/commit/::g')~1
+            echo $COMMIT_RANGE
         else
             COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/compare/::g')
+            echo $COMMIT_RANGE
         fi
         echo "Diff: $COMMIT_RANGE"
         export dockerfiles="$(git diff $COMMIT_RANGE --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
