@@ -16,7 +16,7 @@ jobs:
 
   lint-bash:
     docker:
-      - image: koalaman/shellcheck-alpine
+      - image: koalaman/shellcheck
     steps:
       - checkout
       - run: sh bin/lint
