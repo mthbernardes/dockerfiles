@@ -23,7 +23,7 @@ jobs:
       - run: bash bin/deploy publish 
       
 workflows:
-  gtrs-workflow:
+  dockerfiles-pipeline:
     jobs:
       - docker-build:
           filters:
