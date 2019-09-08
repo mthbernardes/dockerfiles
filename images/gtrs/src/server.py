@@ -5,7 +5,7 @@ from urlparse import urlparse, parse_qs
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 
 serverPort = 80
-secretkey = "NEWSECRETTOKEN"
+secretkey = "TOKEN"
 
 class webServer(BaseHTTPRequestHandler):
 
