@@ -38,10 +38,12 @@ function get_dockerfiles(){
         echo "Diff: $COMMIT_RANGE"
         export dockerfiles="$(git diff $COMMIT_RANGE --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
     fi
+    echo $dockerfiles
 }
 
 if [[  ${action} =~ "build-and-publish" ]];then
     get_dockerfiles
+    echo $dockerfiles
     for dockerfile in $dockerfiles;do
         docker_build_and_publish "${dockerfile}"
     done
