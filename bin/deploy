@@ -53,4 +53,3 @@ if [[  ${action} =~ "build-and-publish" ]];then
 elif [[ "${action}" =~ "authenticate" ]];then
     docker_authentication
 fi
-
