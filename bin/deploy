@@ -1,29 +1,29 @@
 #!/bin/bash 
 
-action=${1}
+action="$1"
 
-function docker_authentication(){
-    if [[ -z ${DOCKER_PASSWORD} ]];then
+function docker_authenticationn(){
+    if [[ -z "$DOCKER_PASSWORD" ]];then
         echo "Variable DOCKER_PASSWORD not set"
         exit 1
     fi
 
-    if [[ -z ${DOCKER_LOGIN} ]];then
+    if [[ -z "$DOCKER_LOGIN" ]];then
         echo "Variable DOCKER_LOGIN not set"
         exit 1
     fi
 
-    echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_LOGIN --password-stdin
+    echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_LOGIN" --password-stdin
 }
 
 function docker_build_and_publish(){
     if [[ -f "$1" ]]; then
-        base_dir="$(dirname ${1})"
-        image_name=$(basename ${base_dir})
-        full_image_name="${DOCKER_LOGIN}/${image_name}"
-        echo "[+] Working on $image_name"
-        docker build -t "${full_image_name}" "${base_dir}"
-        docker push "${full_image_name}"
+        base_dir="$(dirname "$1")"
+        image_name="$(basename "$base_dir")"
+        full_image_name="$DOCKER_LOGIN/$image_name"
+        echo "[+] Working on "$image_name""
+        docker build -t "$full_image_name" "$base_dir"
+        docker push "$full_image_name"
     fi
 }
 
@@ -33,24 +33,24 @@ function get_dockerfiles(){
     fi
     if [[ ! -z "$CIRCLE_COMPARE_URL" ]]; then
         # CIRCLE_COMPARE_URL is not empty, use it to get the diff
-        if [[ $CIRCLE_COMPARE_URL = *"commit"* ]]; then
-            COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/commit/::g')~1
+        if [[ "$CIRCLE_COMPARE_URL" = *"commit"* ]]; then
+            COMMIT_RANGE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/commit/::g')~1
         else
-            COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/compare/::g')
+            COMMIT_RANGE=$(echo "$CIRCLE_COMPARE_URL" | sed 's:^.*/compare/::g')
         fi
-        export dockerfiles="$(git diff $COMMIT_RANGE --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
+        export dockerfiles="$(git diff "$COMMIT_RANGE" --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
     elif [[ "$CIRCLE_BRANCH" == "master" ]]; then
         # CIRCLE_COMPARE_URL is not set, but branch is master, diff with last commit
         export dockerfiles="$(git diff HEAD~1 --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
     fi
 }
 
-if [[  ${action} =~ "build-and-publish" ]];then
+if [[  "$action" =~ "build-and-publish" ]];then
     get_dockerfiles
-    for dockerfile in $dockerfiles;do
-        docker_build_and_publish "${dockerfile}"
-    done
+    while IFS= read -r dockerfile;do
+        docker_build_and_publish "$dockerfile"
+    done <<<  "$dockerfiles"
 
-elif [[ "${action}" =~ "authenticate" ]];then
+elif [[ "$action" =~ "authenticate" ]];then
     docker_authentication
 fi

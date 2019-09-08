@@ -14,6 +14,12 @@ jobs:
       - run: bash bin/deploy authenticate
       - run: bash bin/deploy build-and-publish
 
+  lint-bash:
+    docker:
+      - image: koalaman/shellcheck-alpine
+    steps:
+      - checkout
+      - run: bash bin/lint
      
 workflows:
   dockerfiles-pipeline:
@@ -22,4 +28,10 @@ workflows:
           filters:
             branches:
               only:
+                - master
+
+      - lint-bash:
+          filters:
+            branches:
+              ignore:
                 - master
