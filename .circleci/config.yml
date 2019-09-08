@@ -19,7 +19,7 @@ jobs:
       - image: koalaman/shellcheck-alpine
     steps:
       - checkout
-      - run: bash bin/lint
+      - run: sh bin/lint
      
 workflows:
   dockerfiles-pipeline:
