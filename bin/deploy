@@ -17,11 +17,13 @@ function docker_authentication(){
 }
 
 function docker_build_and_publish(){
-    base_dir="$(dirname ${1})"
-    image_name=$(basename ${base_dir})
-    full_image_name="${DOCKER_LOGIN}/${image_name}"
-    docker build -t "${full_image_name}" "${base_dir}"
-    docker push "${full_image_name}"
+    if [[ -f "$1" ]]; then
+        base_dir="$(dirname ${1})"
+        image_name=$(basename ${base_dir})
+        full_image_name="${DOCKER_LOGIN}/${image_name}"
+        docker build -t "${full_image_name}" "${base_dir}"
+        docker push "${full_image_name}"
+    fi
 }
 
 function get_dockerfiles(){
@@ -47,7 +49,6 @@ if [[  ${action} =~ "build-and-publish" ]];then
     for dockerfile in $dockerfiles;do
         docker_build_and_publish "${dockerfile}"
     done
-
 
 elif [[ "${action}" =~ "authenticate" ]];then
     docker_authentication
