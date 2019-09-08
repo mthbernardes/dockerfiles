@@ -13,7 +13,7 @@ function docker_authentication(){
         exit 1
     fi
 
-    "$DOCKER_PASSWORD" | docker login --username $DOCKER_LOGIN --password-stdin
+    echo "$DOCKER_PASSWORD" | docker login --username $DOCKER_LOGIN --password-stdin
 }
 
 function docker_build_and_publish(){
