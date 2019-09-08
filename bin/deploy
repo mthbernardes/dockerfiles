@@ -25,11 +25,12 @@ function docker_build_and_publish(){
 }
 
 function get_dockerfiles(){
+    echo "NUMBER_BUILD: $CIRCLE_BUILD_NUM"
     if [[ "$CIRCLE_BUILD_NUM" -lt "1" ]]; then
         export dockerfiles="$(find images -name Dockerfile)"
     fi
+    echo "URL: $CIRCLE_COMPARE_URL"
     if [[ ! -z "$CIRCLE_COMPARE_URL" ]]; then
-        echo $CIRCLE_COMPARE_URL
         # CIRCLE_COMPARE_URL is not empty, use it to get the diff
         if [[ $CIRCLE_COMPARE_URL = *"commit"* ]]; then
             COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/commit/::g')~1
