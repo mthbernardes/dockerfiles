@@ -1,4 +1,4 @@
-#!/bin/bash -eo pipefail
+#!/bin/bash 
 
 action=${1}
 
@@ -24,11 +24,28 @@ function docker_build_and_publish(){
     docker push "${full_image_name}"
 }
 
+function get_dockerfiles(){
+    if [[ "$CIRCLE_BUILD_NUM" -lt "1" ]]; then
+        export dockerfiles="$(find images -name Dockerfile)"
+    fi
+    if [[ ! -z "$CIRCLE_COMPARE_URL" ]]; then
+        # CIRCLE_COMPARE_URL is not empty, use it to get the diff
+        if [[ $CIRCLE_COMPARE_URL = *"commit"* ]]; then
+            COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/commit/::g')~1
+        else
+            COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/compare/::g')
+        fi
+        echo "Diff: $COMMIT_RANGE"
+        export dockerfiles="$(git diff $COMMIT_RANGE --name-only | grep 'images/' | cut -d '/' -f1,2 | uniq | xargs -I {} echo {}/Dockerfile)"
+    fi
+}
+
 if [[  ${action} =~ "build-and-publish" ]];then
-    dockerfiles="$(find images -name Dockerfile)"
+    get_dockerfiles
     for dockerfile in $dockerfiles;do
         docker_build_and_publish "${dockerfile}"
     done
+
 
 elif [[ "${action}" =~ "authenticate" ]];then
     docker_authentication
