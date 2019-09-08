@@ -1,0 +1,30 @@
+#!/bin/bash
+
+action=${1}
+funcs=("build" "publish")
+
+function docker_authentication(){
+    "$DOCKER_PASSWORD" | sudo docker login --username $DOCKER_LOGIN --password-stdin
+}
+
+function docker_action(){
+    action=${1}
+    base_dir="$(dirname ${2})"
+    image_name=$(basename ${base_dir})
+    full_image_name="${DOCKER_LOGIN}/${image_name}"
+    if [[ "$action" == "build" ]];then
+        docker build -t "${full_image_name}" "${base_dir}"
+
+    elif [[ "$action" == "publish" ]];then
+        docker push "${full_image_name}"
+    fi
+}
+
+if [[  ${funcs[*]} =~ "${action}" ]];then
+    dockerfiles="$(find images -name Dockerfile)"
+    for dockerfile in $dockerfiles;do
+        docker_action "${action}" "${dockerfile}"
+    done
+elif [[ "${action}" =~ "auth" ]];then
+    docker_authentication
+fi
